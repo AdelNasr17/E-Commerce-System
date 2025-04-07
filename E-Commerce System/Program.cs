@@ -1,9 +1,14 @@
 
+using Domain.Contracts;
+using Microsoft.EntityFrameworkCore;
+using Persistance.Data.Contexts;
+using Persistance.Data.DataSeeding;
+
 namespace E_Commerce_System
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -11,17 +16,29 @@ namespace E_Commerce_System
             #region Add services to the container.
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+        
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            //DbContext
+            builder.Services.AddDbContext<APPDbContext>(options =>
+            {
+               
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionString"));
+            });
+
+
+            //DataSeeding 
+            builder.Services.AddScoped<IDbInitializer,DbInitializer>();
+
+            //Resolve For Some Dependance ==> Create Scope
 
             #endregion
 
 
 
             var app = builder.Build();
-
-           
+            //DataSeeding 
+            await SeedDbAsync(app);
             #region Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -37,6 +54,16 @@ namespace E_Commerce_System
             app.MapControllers();
 
             app.Run(); 
+
+            async Task SeedDbAsync(WebApplication app)
+            {
+                using var scope =app.Services.CreateScope();
+                var DbIntializer= scope.ServiceProvider.GetRequiredService<IDbInitializer>();
+
+                await DbIntializer.InitializerAsync();
+
+
+            }
             #endregion
         }
     }
