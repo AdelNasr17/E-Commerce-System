@@ -7,7 +7,11 @@ namespace Domain.Contracts
     {
 
         public Task<TEntity?> GetByIdAsync(TKey id);
-        public Task<IEnumerable<TEntity>> GetAllAsync(bool AsNoTracking);
+        public Task<IEnumerable<TEntity>> GetAllAsync(bool AsNoTracking=false);
+        public Task<TEntity?> GetByIdAsync(Specifications<TEntity> specifications);
+        public Task<int> CountAsync(Specifications<TEntity> specifications);
+        public Task<IEnumerable<TEntity>> GetAllAsync(Specifications<TEntity> specifications);
+
 
         public Task AddAsync(TEntity entity);
 

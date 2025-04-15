@@ -1,6 +1,6 @@
 ﻿
 
-namespace Persistance.Data.Configurations.product
+namespace Persistence.Data.Configurations.product
 {
     public class ProductConfiguration : IEntityTypeConfiguration<Product>
     {

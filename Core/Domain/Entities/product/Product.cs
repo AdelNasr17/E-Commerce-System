@@ -8,10 +8,10 @@ namespace Domain.Entities.product
         public string PictureUrl {  get; set; } = null!;
         public decimal Price { get; set; }
         //Navginatial Product [One ]
-        public ProductBrand ProductBrand { get; set; }
+        public ProductBrand ProductBrand { get; set; } = null!;
         public int BrandId { get; set; }//FK
         //Navginatial Product [One ]
-        public ProductType ProductType { get; set; }
+        public ProductType ProductType { get; set; } = null!;
         public int TypeId { get; set; }//FK
     }
 }

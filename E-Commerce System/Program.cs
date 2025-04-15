@@ -1,8 +1,14 @@
 
 using Domain.Contracts;
+using E_Commerce_System.Middleware;
 using Microsoft.EntityFrameworkCore;
-using Persistance.Data.Contexts;
-using Persistance.Data.DataSeeding;
+using Persistence.Data.Contexts;
+using Persistence.Data.DataSeeding;
+using Persistence.Repositories;
+using Services;
+using Services_Abstraction;
+using System.Reflection.Metadata;
+
 
 namespace E_Commerce_System
 {
@@ -10,12 +16,13 @@ namespace E_Commerce_System
     {
         public static async Task Main(string[] args)
         {
+
             var builder = WebApplication.CreateBuilder(args);
 
            
             #region Add services to the container.
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers().AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly);
         
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -30,13 +37,22 @@ namespace E_Commerce_System
             //DataSeeding 
             builder.Services.AddScoped<IDbInitializer,DbInitializer>();
 
-            //Resolve For Some Dependance ==> Create Scope
+            //UnitOfWork
+            builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
+            builder.Services.AddAutoMapper(typeof(Services.AssemblyReference).Assembly);
+
+            //ServiceManager
+            builder.Services.AddScoped<IServicesManager, ServicesManager>();
+
 
             #endregion
 
 
 
             var app = builder.Build();
+
+            //MiddleWare
+            app.UseMiddleware<GlobalErrorHandlingMiddleware>();
             //DataSeeding 
             await SeedDbAsync(app);
             #region Configure the HTTP request pipeline.
@@ -45,6 +61,8 @@ namespace E_Commerce_System
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            //
+            app.UseStaticFiles();
 
             app.UseHttpsRedirection();
 
