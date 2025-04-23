@@ -1,5 +1,6 @@
 
 using Domain.Contracts;
+using E_Commerce_System.Extensions;
 using E_Commerce_System.Factories;
 using E_Commerce_System.Middleware;
 using Microsoft.AspNetCore.Mvc;
@@ -7,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using Persistence.Data.Contexts;
 using Persistence.Data.DataSeeding;
 using Persistence.Repositories;
+using Presentation;
 using Services;
 using Services_Abstraction;
-using System.Reflection.Metadata;
+
+
 
 
 namespace E_Commerce_System
@@ -21,37 +24,17 @@ namespace E_Commerce_System
 
             var builder = WebApplication.CreateBuilder(args);
 
-           
+
             #region Add services to the container.
 
             builder.Services.AddControllers().AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly);
-        
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-            //DbContext
-            builder.Services.AddDbContext<APPDbContext>(options =>
-            {
-               
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionString"));
-            });
+            builder.Services.AddSwaggerServices();
+            builder.Services.AddInfrastructureServices(builder.Configuration);
 
-
-            //DataSeeding 
-            builder.Services.AddScoped<IDbInitializer,DbInitializer>();
-
-            //UnitOfWork
-            builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
-            builder.Services.AddAutoMapper(typeof(Services.AssemblyReference).Assembly);
-
-            //ServiceManager
-            builder.Services.AddScoped<IServicesManager, ServicesManager>();
+            builder.Services.AddApplicationServices();
 
             //Custom Validation error Response Factory 
-            builder.Services.Configure<ApiBehaviorOptions>(options =>
-            {
-                options.InvalidModelStateResponseFactory = ApiResponseFactory.CustomValidationErrorResponse;
-            }      
-            );
+            builder.Services.AddWebApplicationServices();
 
 
             #endregion
@@ -60,15 +43,14 @@ namespace E_Commerce_System
 
             var app = builder.Build();
             //DataSeeding 
-            await SeedDbAsync(app);
+            await app.SeedDatabaseAsync();
             #region Configure the HTTP request pipeline.
 
             //MiddleWare
-            app.UseMiddleware<GlobalErrorHandlingMiddleware>();
+            app.UseCustomExceptionMiddleWare();
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerMiddleWares();
             }
             //
             app.UseStaticFiles();
@@ -80,17 +62,9 @@ namespace E_Commerce_System
 
             app.MapControllers();
 
-            app.Run(); 
+            app.Run();
 
-            async Task SeedDbAsync(WebApplication app)
-            {
-                using var scope =app.Services.CreateScope();
-                var DbIntializer= scope.ServiceProvider.GetRequiredService<IDbInitializer>();
-
-                await DbIntializer.InitializerAsync();
-
-
-            }
+      
             #endregion
         }
     }

@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\core\Services Abstraction\Services Abstraction.csproj" />
+    <ProjectReference Include="..\Persistance\Persistence.csproj" />
   </ItemGroup>
 
 </Project>
