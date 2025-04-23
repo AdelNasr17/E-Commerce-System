@@ -24,10 +24,15 @@ namespace E_Commerce_System.Middleware
             try
             {
 
-                await _next(httpContext);
+                await _next.Invoke(httpContext);
+                if (httpContext.Response.StatusCode == StatusCodes.Status404NotFound)
+                {
+                    await HandelNotFoundApiAsync(httpContext);
+                }
 
 
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 //Loge Exception 
                 _logger.LogError($"Something went wrong :{ex}");
@@ -37,26 +42,46 @@ namespace E_Commerce_System.Middleware
             }
         }
 
+        private async Task HandelNotFoundApiAsync(HttpContext httpContext)
+        {
+            httpContext.Response.ContentType = "application/json";
+            var response = new ErrorDetails
+            {
+                StatusCode = StatusCodes.Status404NotFound,
+                ErrorMessage = $"The End Point {httpContext.Request.Path} Is Not Found "
+            };
+            await httpContext.Response.WriteAsync(response.ToString());
+
+
+        }
+
+
         private async Task HandleExceptionAsync(HttpContext httpContext, Exception ex)
         {
-           //Set Content type[application/json]
-           // set status Code  to 500
-           // return standard response
-           httpContext.Response.ContentType = "application/json";
-            httpContext.Response.StatusCode=(int) HttpStatusCode.InternalServerError;//500
+            //Set Content type[application/json]
+            httpContext.Response.ContentType = "application/json";
+            // set status Code  to 500
+            //httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;//500
+            httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;//500
+
 
             httpContext.Response.StatusCode = ex switch
             {
                 NotFoundException => (int)HttpStatusCode.NotFound, //404
                 _ => (int)HttpStatusCode.InternalServerError
             };
+
+
+            // Response Object 
             var response = new ErrorDetails
             {
                 StatusCode = httpContext.Response.StatusCode,
                 ErrorMessage = ex.Message
-            }.ToString();
-           
-            await httpContext.Response.WriteAsync(response);
+            };
+
+
+            //Return object As Json
+            await httpContext.Response.WriteAsync(response.ToString());
         }
     }
 }

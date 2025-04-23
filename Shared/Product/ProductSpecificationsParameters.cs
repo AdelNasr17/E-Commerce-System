@@ -1,4 +1,6 @@
-﻿namespace Shared.Product
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Shared.Product
 {
     public class ProductSpecificationsParameters
     {
@@ -22,6 +24,7 @@
 
     public enum ProductSortOptions
     {
+        
         NameAsc,
         NameDesc,
         priceAsc,

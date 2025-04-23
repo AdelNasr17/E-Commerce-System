@@ -1,6 +1,8 @@
 
 using Domain.Contracts;
+using E_Commerce_System.Factories;
 using E_Commerce_System.Middleware;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Data.Contexts;
 using Persistence.Data.DataSeeding;
@@ -44,18 +46,25 @@ namespace E_Commerce_System
             //ServiceManager
             builder.Services.AddScoped<IServicesManager, ServicesManager>();
 
+            //Custom Validation error Response Factory 
+            builder.Services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.InvalidModelStateResponseFactory = ApiResponseFactory.CustomValidationErrorResponse;
+            }      
+            );
+
 
             #endregion
 
 
 
             var app = builder.Build();
-
-            //MiddleWare
-            app.UseMiddleware<GlobalErrorHandlingMiddleware>();
             //DataSeeding 
             await SeedDbAsync(app);
             #region Configure the HTTP request pipeline.
+
+            //MiddleWare
+            app.UseMiddleware<GlobalErrorHandlingMiddleware>();
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();

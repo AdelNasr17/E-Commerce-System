@@ -39,6 +39,7 @@ namespace Presentation
         public async Task<ActionResult<ProductResultDto>> GetProduct(int id)
         {
             var product = await _servicesManager.ProductService.GetProductByIdAsync(id);
+          
             return Ok(product);
         }
 
