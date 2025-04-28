@@ -3,7 +3,7 @@ namespace Persistence.Data.Contexts
 {
     public class APPDbContext : DbContext
     {
-        public APPDbContext(DbContextOptions options) : base(options)
+        public APPDbContext(DbContextOptions<APPDbContext> options) : base(options)
         {
         }
 

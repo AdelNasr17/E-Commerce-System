@@ -1,15 +1,14 @@
-﻿using Domain.Contracts;
-using Microsoft.EntityFrameworkCore;
+﻿
+using Domain.Entities.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Persistence.Data.Contexts;
 using Persistence.Data.DataSeeding;
+using Persistence.Identity;
 using Persistence.Repositories;
 using StackExchange.Redis;
 
-
-
-namespace Presentation
+namespace Persistence
 {
     public static class InfrastructureServicesRegistration
     {
@@ -31,6 +30,17 @@ namespace Presentation
             {
                 return ConnectionMultiplexer.Connect(Configuration.GetConnectionString("RedisConnectionString"));
             });
+            // Configure DbContext with SQL Server
+            Services.AddDbContext<StoreIdentityDbContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("IdentityConnectionString"));
+            });
+
+            Services.AddIdentityCore<ApplicationUser>().AddRoles<IdentityRole>().AddEntityFrameworkStores<StoreIdentityDbContext>();
+           
+           
+
+            
 
             return Services;
         }

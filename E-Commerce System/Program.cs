@@ -1,16 +1,16 @@
 
 using Domain.Contracts;
+using Domain.Entities.Identity;
 using E_Commerce_System.Extensions;
 using E_Commerce_System.Factories;
 using E_Commerce_System.Middleware;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Persistence.Data.Contexts;
-using Persistence.Data.DataSeeding;
-using Persistence.Repositories;
-using Presentation;
+using Persistence;
+
 using Services;
-using Services_Abstraction;
+
 
 
 
@@ -35,6 +35,8 @@ namespace E_Commerce_System
 
             //Custom Validation error Response Factory 
             builder.Services.AddWebApplicationServices();
+            builder.Services.AddJwtService(builder.Configuration);
+
 
 
             #endregion
@@ -54,7 +56,9 @@ namespace E_Commerce_System
             }
             //
             app.UseStaticFiles();
-
+            app.UseRouting(); 
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseHttpsRedirection();
 
             app.UseAuthorization();

@@ -5,12 +5,16 @@ namespace E_Commerce_System.Extensions
 {
     public static class WebApplicationRegistration
     {
-        public static async Task SeedDatabaseAsync(this WebApplication app)
+        public static async Task<WebApplication> SeedDatabaseAsync(this WebApplication app)
         {
             // Method to seed the database
             using var scope = app.Services.CreateScope();
             var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
             await dbInitializer.InitializerAsync();
+            await dbInitializer.IdentityDataSeedingAsync();
+
+            return app;
+
         }
 
         public static IApplicationBuilder UseCustomExceptionMiddleWare(this IApplicationBuilder app)

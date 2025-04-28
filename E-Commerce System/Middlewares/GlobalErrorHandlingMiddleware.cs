@@ -1,4 +1,5 @@
-﻿using Domain.Exceptions;
+﻿using Azure;
+using Domain.Exceptions;
 using Shared.ErrorModels;
 using System.Net;
 using System.Text.Json;
@@ -64,24 +65,32 @@ namespace E_Commerce_System.Middleware
             //httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;//500
             httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;//500
 
-
-            httpContext.Response.StatusCode = ex switch
-            {
-                NotFoundException => (int)HttpStatusCode.NotFound, //404
-                _ => (int)HttpStatusCode.InternalServerError
-            };
-
-
-            // Response Object 
             var response = new ErrorDetails
             {
                 StatusCode = httpContext.Response.StatusCode,
                 ErrorMessage = ex.Message
             };
 
+            httpContext.Response.StatusCode = ex switch
+            {
+                NotFoundException => StatusCodes.Status404NotFound, //404
+                UnauthorizedException => StatusCodes.Status401Unauthorized,
+                BadRequestException badRequestException => GetBadRequestErrors(response, badRequestException),
+                _ => StatusCodes.Status500InternalServerError
+            };
+
+
+            // Response Object 
+
 
             //Return object As Json
             await httpContext.Response.WriteAsync(response.ToString());
+        }
+
+        private static int GetBadRequestErrors(ErrorDetails response, BadRequestException badRequestException)
+        {
+             response.Errors=badRequestException.Errors;
+            return StatusCodes.Status400BadRequest;
         }
     }
 }

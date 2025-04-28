@@ -5,9 +5,8 @@ using Shared.Basket.Dto;
 
 namespace Presentation
 {
-    [ApiController]
-    [Route("api/[Controller]")]
-    public class BasketController(IServicesManager servicesManager):ControllerBase
+  
+    public class BasketController(IServicesManager servicesManager): ApiBaseController
     {
 
         //Get Basket
