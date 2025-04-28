@@ -63,7 +63,7 @@ namespace Services
                 user.Address.City= addressDto.City;
 
             }
-            else //addNew adress
+            else //Add New adress
             {
                 user.Address=_mapper.Map<AddressDto,Address>(addressDto);
             }
@@ -141,7 +141,7 @@ namespace Services
           {
               new (ClaimTypes.Email,user.Email!),
               new (ClaimTypes.Name,user.UserName!),
-              new (ClaimTypes.NameIdentifier,user.Id!),
+              new (ClaimTypes.NameIdentifier,user.Id),
 
           };
             var Roles= await _userManager.GetRolesAsync(user);
