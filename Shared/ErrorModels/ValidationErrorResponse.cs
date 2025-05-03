@@ -1,0 +1,22 @@
+﻿
+
+using System.Net;
+
+namespace Shared.ErrorModels
+{
+    public class ValidationErrorResponse
+    {
+        public int StatusCode { get; set; } = (int)HttpStatusCode.BadRequest;
+        public string Message { get; set; } = "Validation Filed";
+
+        public IEnumerable<ValidationError> ValidationErrors { get; set; } = [];
+
+    }
+
+    public class ValidationError
+    {
+        public string Filed { get; set; } = default!;
+
+        public IEnumerable<string> Errors { get; set; } = [];
+    }
+}
