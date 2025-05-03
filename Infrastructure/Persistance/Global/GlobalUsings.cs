@@ -6,3 +6,4 @@ global using Domain.Entities;
 global using Persistence.Data.Contexts;
 global using System.Collections.Concurrent;
 global using System.Reflection;
+global using Domain.Entities.Order;

@@ -47,8 +47,8 @@ namespace Presentation
         [HttpGet("CurrentUser")]
         public async Task<ActionResult<UserDto>> GetCurrentUser()
         {
-            var email = User.FindFirstValue(ClaimTypes.Email);
-            var addUser = await _servicesManager.authenticationService.GetCurrentUserAsync(email!);
+           
+            var addUser = await _servicesManager.authenticationService.GetCurrentUserAsync(GetEmailFromToken());
             return Ok(addUser);
         }
         // Get Current User address 
@@ -56,8 +56,8 @@ namespace Presentation
         [HttpGet("Address")]
         public async Task<ActionResult<AddressDto>> GetCurrentUserAddress()
         {
-            var email = User.FindFirstValue(ClaimTypes.Email);
-            var Address = await _servicesManager.authenticationService.GetCurrentUserAddressAsync(email!);
+            
+            var Address = await _servicesManager.authenticationService.GetCurrentUserAddressAsync(GetEmailFromToken());
             return Ok(Address);
         }
 
@@ -66,8 +66,8 @@ namespace Presentation
         [HttpPut("Address")]
         public async Task<ActionResult<AddressDto>> UpdateCurrentUserAddress(AddressDto addressDto)
         {
-            var email = User.FindFirstValue(ClaimTypes.Email);
-            var updatedAddress = await _servicesManager.authenticationService.UpdateCurrentUserAddressAsync(email, addressDto);
+           
+            var updatedAddress = await _servicesManager.authenticationService.UpdateCurrentUserAddressAsync(GetEmailFromToken(), addressDto);
             return Ok(updatedAddress);
         }
     }

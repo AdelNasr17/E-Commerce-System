@@ -3,10 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services_Abstraction;
 using Shared;
-using Shared.Identity.Dto;
 using Shared.Product;
 using Shared.Product.Dto;
-using System.Security.Claims;
+
 
 namespace Presentation
 {

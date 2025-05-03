@@ -26,7 +26,7 @@ namespace Persistence.Data.DataSeeding
                         if( Types is not null&&Types.Any())
                         {
                             await _dbContext.AddRangeAsync(Types);
-                            await _dbContext.SaveChangesAsync();
+                           
                         }
                     }
 
@@ -39,7 +39,7 @@ namespace Persistence.Data.DataSeeding
                         if (brands is not null && brands.Any())
                         {
                             await _dbContext.AddRangeAsync(brands);
-                            await _dbContext.SaveChangesAsync();
+                           
 
                         }
                     }
@@ -53,11 +53,25 @@ namespace Persistence.Data.DataSeeding
                         if (product is not null && product.Any())
                         {
                             await _dbContext.AddRangeAsync(product);
-                            await _dbContext.SaveChangesAsync();
+                          
 
                         }
                     }
-               // }
+                if (!_dbContext.Set<DeliveryMethod>().Any())
+                {
+                    var DeliveryMethodData = await File.ReadAllTextAsync(@"..\Infrastructure\Persistance\Data\DataSeeding\delivery.json");
+
+                    var DeliveryMethod = JsonSerializer.Deserialize<List<DeliveryMethod>>(DeliveryMethodData);
+
+                    if (DeliveryMethod is not null && DeliveryMethod.Any())
+                    {
+                        await _dbContext.Set<DeliveryMethod>().AddRangeAsync(DeliveryMethod);
+                      
+
+                    }
+                }
+                await _dbContext.SaveChangesAsync();
+                // }
             }
             catch(Exception ) 
             {

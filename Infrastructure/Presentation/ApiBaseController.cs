@@ -1,12 +1,15 @@
 ﻿
 
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Presentation
 {
     [ApiController]
     [Route("api/[Controller]")]
-    public class ApiBaseController:ControllerBase
+    public abstract class ApiBaseController:ControllerBase
     {
+        protected  string GetEmailFromToken() =>   User.FindFirstValue(ClaimTypes.Email)!;
+
     }
 }
